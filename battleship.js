@@ -33,7 +33,7 @@ var model = {
         view.displayMessage("HIT!");
         if (this.isSunk(ship)) {
           view.displayMessage("You sank my battleship!");
-          this.shipsSunk++
+          this.shipsSunk++;
         }
         return true;
       }
@@ -50,5 +50,13 @@ var model = {
       }
     }
     return true;
+  }
+};
+
+var controller = {
+  guesses: 0,
+
+  processGuess: function(guess) {
+
   }
 };
