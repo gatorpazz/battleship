@@ -57,6 +57,8 @@ var controller = {
   guesses: 0,
 
   processGuess: function(guess) {
-
+    if (guess === null || guess.length !== 2) {
+      alert("Oops please enter a number or a letter that are on the board");
+    }
   }
 };
