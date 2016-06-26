@@ -19,9 +19,9 @@ var model = {
   shipLength: 3,
   shipsSunk: 0,
 
-  ships: [{ locations: ["06", "16", "26"], hits: ["", "", ""] },
-          { locations: ["24", "34", "44"], hits: ["", "", ""] },
-          { locations: ["10", "11", "12"], hits: ["", "", ""] }],
+  ships: [{ locations: [0, 0, 0], hits: ["", "", ""] },
+          { locations: [0, 0, 0], hits: ["", "", ""] },
+          { locations: [0, 0, 0], hits: ["", "", ""] }],
   generateShipLocations: function() {
     var locations;
     for (var i = 0; i < this.numShips; i++) {
@@ -35,22 +35,34 @@ var model = {
   generateShip: function() {
     var direction = Math.floor(Math.random() * 2);
     var row, col;
-
     if (direction === 1) {
-
+      row = Math.floor(Math.random() * this.boardSize);
+      col = Math.floor(Math.random() * (this.boardSize - this.shipLength));
     } else {
-
+      row = Math.floor(Math.random() * (this.boardSize - this.shipLength));
+      col = Math.floor(Math.random() * this.boardSize);
     }
     var newShipLocations = [];
     for (var i = 0; i < this.shipLength; i++) {
       if (direction === 1) {
-
+        newShipLocations.push(row + "" + (col + i));
       } else {
-
+        newShipLocations.push((row + i) + "" + col);
       }
     }
     return newShipLocations;
-  }
+  },
+  collision: function(locations) {
+    for (var i = 0; i < this.numShips; i++) {
+      var ship = model.ships[i];
+      for (var j = 0; j < locations.length; j++) {
+        if (ship.locations.indexOf(locations[j]) >= 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  },
   fire: function(guess) {
     for (var i = 0; i < this.numShips; i++) {
       var ship = this.ships[i];
@@ -92,6 +104,13 @@ var controller = {
         view.displayMessage("You sank all my battleships in " + this.guesses + " guesses");
       }
     }
+  },
+  clickGuess: function(guess) {
+    this.guesses++
+    var hit = model.fire(guess);
+    if (hit && model.shipsSunk === model.numShips) {
+      view.displayMessage("You sank all my battleships in " + this.guesses + " guesses");
+    }
   }
 };
 
@@ -99,7 +118,7 @@ function parseGuess(guess) {
   var alphabet = ["A","B","C","D","E","F","G"];
   if (guess === null || guess.length !== 2) {
     alert("Oops please enter a number or a letter that are on the board");
-  } else {
+  }  else {
     firstChar = guess.charAt(0);
     var row = alphabet.indexOf(firstChar);
     var column = guess.charAt(1);
@@ -132,6 +151,10 @@ function init() {
   fireButton.onclick = handleFireButton;
   var guessInput = document.getElementById("guessInput");
   guessInput.onkeypress = handleKeyPress;
+  model.generateShipLocations();
 }
 
 window.onload = init;
+$("td").click(function(){
+  controller.clickGuess(this.id);
+})
